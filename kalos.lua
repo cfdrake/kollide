@@ -1,4 +1,4 @@
--- kl: k-loop clone
+-- kalos: k-loop clone
 -- by: @cfd90
 --
 -- K2 play sample 1
@@ -7,16 +7,24 @@
 -- E2 lfo rate
 -- E3 lfo amount
 
+-- TODO:
+-- K1 + K2 and K1 + K3 to load sample 3 and sample 4
+-- get psets working
+-- maybe increase size of LFO in rate animation
+
 local rate = 1
 local lfo_rate = 0.05
 local lfo_val = 0
 local lfo_amount = 0
 local c = 0
 
+local sample = -1
 local file1 = ""
 local file2 = ""
 
 function init()
+  params:add_separator()
+  
   params:add_file("sample 1", "sample 1")
   params:set_action("sample 1", function(file)
     local was_empty = file1 == "" and file2 == ""
@@ -42,7 +50,6 @@ function init()
   softcut.loop(1, 1)
   softcut.loop_start(1, 1)
   softcut.loop_end(1, 1)
-  -- softcut.loop_end(1, file_length(file))
   softcut.position(1, 1)
   softcut.rate(1, 1)
   softcut.play(1, 1)
@@ -65,6 +72,7 @@ end
 
 function load_file(n)
   file = ""
+  sample = n
   
   if n == 1 then
     file = file1
@@ -106,10 +114,8 @@ function enc(n, d)
 end
 
 function key(n, z)
-  if n == 2 and z == 1 then
-    load_file(1)
-  elseif n == 3 and z == 1 then
-    load_file(2)
+  if n >= 2 and n <= 3 and z == 1 then
+    load_file(n - 1)
   end
 end
 
@@ -123,19 +129,19 @@ function redraw()
   screen.stroke()
   
   if file1 == "" and file2 == "" then
-    screen.level(15)
+    screen.level(5)
     screen.move(0, 10)
-    screen.text("load a file to start...")
+    screen.text("^ load a file to start...")
   end
   
   screen.level(15)
   screen.move(0, 40)
-  screen.text("rate > ")
+  screen.text("pitch > ")
   screen.level(3)
   screen.text(string.format("%.2f", rate))
   screen.move(0, 50)
   screen.level(15)
-  screen.text("lfo rate > ")
+  screen.text("lfo speed > ")
   screen.level(3)
   screen.text(string.format("%.2f", lfo_rate))
   screen.move(0, 60)
@@ -143,6 +149,14 @@ function redraw()
   screen.text("lfo amnt > ")
   screen.level(3)
   screen.text(string.format("%.2f", lfo_amount))
+  
+  if sample ~= -1 then
+    screen.move(91, 60)
+    screen.level(15)
+    screen.text("samp > ")
+    screen.level(3)
+    screen.text(sample)
+  end
   
   screen.update()
 end
