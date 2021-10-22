@@ -3,9 +3,11 @@
 --
 -- K2 play sample 1
 -- K3 play sample 2
--- E1 rate
+-- E1 pitch
 -- E2 lfo speed
 -- E3 lfo amount
+--
+-- thanks: critter and guitari
 
 -- Variables for calculating LFO.
 local lfo_val = 0
