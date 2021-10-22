@@ -1,4 +1,4 @@
--- kalos: k-loop-alike
+-- kollide: k-loop-alike
 -- by: @cfd90
 --
 -- K2 play sample 1
@@ -92,6 +92,8 @@ function enc(n, d)
     params:delta("lfo_amount", d)
   end
 end
+
+k1_held = false
 
 function key(n, z)
   if n == 2 and z == 1 then
