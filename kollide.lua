@@ -57,7 +57,7 @@ function init()
     load_file(filename)
   end)
   
-  params:add{id="rate", name="pitch", type="control", controlspec=controlspec.new(-3.0, 3.0, 'lin', 0.01, 1, "", 1/500)}
+  params:add{id="rate", name="pitch", type="control", controlspec=controlspec.new(-4.0, 4.0, 'lin', 0.01, 1, "", 1/500)}
   params:add_option("quantize", "quantize?", {"yes", "no"}, 2)
   params:add{id="lfo_rate", name="lfo speed", type="control", controlspec=controlspec.new(0.01, 0.5, 'lin', 0.01, 0.05, "", 1/500)}
   params:add{id="lfo_amount", name="lfo amount", type="control", controlspec=controlspec.new(0, 1, 'lin', 0.01, 0, "", 1/500)}
