@@ -13,6 +13,25 @@
 local lfo_val = 0
 local lfo_counter = 0
 
+-- Quantization.
+local intervals = {
+  -4,
+  -3,
+  -2,
+  -1.5,
+  -1,
+  -0.5,
+  -0.25,
+  0,
+  0.25,
+  0.5,
+  1,
+  1.5,
+  2,
+  3,
+  4
+}
+
 function init()
   -- Initialize softcut.
   softcut.buffer_clear()
@@ -39,6 +58,7 @@ function init()
   end)
   
   params:add{id="rate", name="pitch", type="control", controlspec=controlspec.new(-3.0, 3.0, 'lin', 0.01, 1, "", 1/500)}
+  params:add_option("quantize", "quantize?", {"yes", "no"}, 2)
   params:add{id="lfo_rate", name="lfo speed", type="control", controlspec=controlspec.new(0.01, 0.5, 'lin', 0.01, 0.05, "", 1/500)}
   params:add{id="lfo_amount", name="lfo amount", type="control", controlspec=controlspec.new(0, 1, 'lin', 0.01, 0, "", 1/500)}
 
@@ -80,7 +100,14 @@ function update_lfo()
   lfo_val = params:get("lfo_amount") * math.sin(lfo_counter)
   
   -- Set softcut rate.
-  softcut.rate(1, params:get("rate") + lfo_val)
+  local r = params:get("rate")
+  local should_quantize = params:get("quantize") == 1
+
+  if should_quantize then
+    r = quantize(r, intervals)
+  end
+
+  softcut.rate(1, r + lfo_val)
 end
 
 function enc(n, d)
@@ -122,11 +149,18 @@ function redraw()
   end
   
   -- Draw params.
+  local r = params:get("rate")
+  local should_quantize = params:get("quantize") == 1
+
+  if should_quantize then
+    r = quantize(r, intervals)
+  end
+
   screen.level(15)
   screen.move(0, 40)
   screen.text("pitch > ")
   screen.level(3)
-  screen.text(string.format("%.2f", params:get("rate")))
+  screen.text(string.format("%.2f", r))
   screen.move(0, 50)
   screen.level(15)
   screen.text("lfo speed > ")
@@ -150,4 +184,18 @@ function file_length(file)
   else
     return 0
   end
+end
+
+function quantize(n, values)
+  local best = 0
+  local best_diff = 9999
+  for i=1,#values do
+    local v = values[i]
+    local diff = math.abs(v - n)
+    if diff < best_diff then
+      best = v
+      best_diff = diff
+    end
+  end
+  return best
 end
